@@ -93,7 +93,7 @@ open class LBXScanViewController: UIViewController {
                 var qrCodeType: [AVMetadataObject.ObjectType]?
                 if let type = isQrCode {
                     if type {
-                        qrCodeType = [AVMetadataObject.ObjectType.qr as NSString as [AVMetadataObject.ObjectType]
+                        qrCodeType = [AVMetadataObject.ObjectType.qr as NSString] as [AVMetadataObject.ObjectType]
                     }else {
                         qrCodeType = [AVMetadataObject.ObjectType.ean13 as NSString,
                                       AVMetadataObject.ObjectType.code128 as NSString] as [AVMetadataObject.ObjectType]
