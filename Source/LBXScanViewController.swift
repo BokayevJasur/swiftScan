@@ -46,6 +46,14 @@ open class LBXScanViewController: UIViewController {
     // 相机启动提示文字
     public var readyString: String! = "loading"
 
+    // my changed
+    let cancelButton = UIButton()
+    open var topMarginSize: CGFloat!
+    
+    open var isQrCode: Bool?
+    open var isNavigation = false
+    
+    
     open override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -80,9 +88,24 @@ open class LBXScanViewController: UIViewController {
 
             // 指定识别几种码
             if arrayCodeType == nil {
-                arrayCodeType = [AVMetadataObject.ObjectType.qr as NSString,
-                                 AVMetadataObject.ObjectType.ean13 as NSString,
-                                 AVMetadataObject.ObjectType.code128 as NSString] as [AVMetadataObject.ObjectType]
+                
+                //my changed
+                var qrCodeType: [AVMetadataObject.ObjectType]?
+                if let type = isQrCode {
+                    if type {
+                        qrCodeType = [AVMetadataObject.ObjectType.qr as NSString as [AVMetadataObject.ObjectType]
+                    }else {
+                        qrCodeType = [AVMetadataObject.ObjectType.ean13 as NSString,
+                                      AVMetadataObject.ObjectType.code128 as NSString] as [AVMetadataObject.ObjectType]
+                    }
+                    
+                }else {
+                    qrCodeType = [AVMetadataObject.ObjectType.qr as NSString,
+                                  AVMetadataObject.ObjectType.ean13 as NSString,
+                                  AVMetadataObject.ObjectType.code128 as NSString] as [AVMetadataObject.ObjectType]
+                }
+                
+                arrayCodeType = qrCodeType
             }
 
             scanObj = LBXScanWrapper(videoPreView: view,
@@ -120,6 +143,17 @@ open class LBXScanViewController: UIViewController {
             delegate?.drawwed()
         }
         qRScanView?.deviceStartReadying(readyStr: readyString)
+        
+        //my changed
+        view.addSubview(cancelButton)
+        cancelButton.setImage(UIImage(named: "cancel_img"), for: .normal)
+        cancelButton.setTitleColor(UIColor.white, for: .normal)
+        cancelButton.setTitleColor(UIColor.white.withAlphaComponent(0.7), for: .highlighted)
+        cancelButton.layer.cornerRadius = 30
+        cancelButton.frame = CGRect.init(x: (UIScreen.main.bounds.width - 75), y: (topMarginSize + 10), width: 60, height: 60)
+        cancelButton.isHidden = isNavigation
+        cancelButton.addTarget(self, action: #selector(clickCloce(_:)), for: .touchUpInside)
+        
     }
    
 
@@ -131,10 +165,10 @@ open class LBXScanViewController: UIViewController {
             fatalError("you must set scanResultDelegate or override this method without super keyword")
         }
         
-        if !isSupportContinuous {
-            navigationController?.popViewController(animated: true)
-
-        }
+//        if !isSupportContinuous {
+//            navigationController?.popViewController(animated: true)
+//
+//        }
         
         if let result = arrayResult.first {
             delegate.scanFinished(scanResult: result, error: nil)
@@ -159,6 +193,12 @@ open class LBXScanViewController: UIViewController {
             self?.present(picker, animated: true, completion: nil)
         }
     }
+    
+    //my changed
+    @objc open func clickCloce(_:UIButton) {
+        self.dismiss(animated: true, completion: nil)
+    }
+    
 }
 
 //MARK: - 图片选择代理方法
